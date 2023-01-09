@@ -1,0 +1,38 @@
+# node      : 4 outs      : 16  universes   : 2720  pixels
+# out       : ----------- : 4   universes   : 680   pixels
+# universe  : ----------------------------- : 170   pixels
+#
+#                                node 0
+#      out 0      |      out 1      |      out 2      |      out 3
+# u00 u01 u02 u03 | u04 u05 u06 u07 | u08 u09 u10 u11 | u12 u13 u14 u15
+---
+nodes:
+  - addr: [10.0.0.10, 0, 0]  #   [ip, net, subnet]
+    outs:
+      0: 0-600  # { output number : global pixel numbers range }
+
+  - addr: [10.0.0.10, 0, 1]
+    outs:
+      0: 901, 1001-1010
+      1: 600 - 725
+      3: 725- 800,1015
+
+  - addr: [10.0.0.10, 0, 3]
+    outs:
+      2: 800-850
+
+  - addr: [10.0.0.10, 0, 4]
+    outs:
+      1: 1016-1028
+      3: 1062
+
+# result will be like:
+# pixel global indexes   address
+# 0-600                   -> ip: 10.0.0.10, net: 0, subnet: 0, out: 0
+# 600-725                 -> ip: 10.0.0.10, net: 0, subnet: 1, out: 1
+# 725-800                 -> ip: 10.0.0.10, net: 0, subnet: 1, out: 3
+# 800-850                 -> ip: 10.0.0.10, net: 0, subnet: 3, out: 2
+# 901, 1001-1010          -> ip: 10.0.0.10, net: 0, subnet: 1, out: 0
+# 1015                    -> ip: 10.0.0.10, net: 0, subnet: 1, out: 3
+# 1016-1028               -> ip: 10.0.0.10, net: 0, subnet: 4, out: 1
+# 1062                    -> ip: 10.0.0.10, net: 0, subnet: 4, out: 3

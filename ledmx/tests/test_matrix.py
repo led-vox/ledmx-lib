@@ -1,4 +1,4 @@
-from ledmx.matrix import Matrix
+from ledmx.multiverse import Matrix
 import pytest
 
 layout_conf = '''

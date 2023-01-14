@@ -7,24 +7,30 @@
 # u00 u01 u02 u03 | u04 u05 u06 u07 | u08 u09 u10 u11 | u12 u13 u14 u15
 ---
 nodes:
-  - addr: [10.0.0.10, 0, 0]  #   [ip, net, subnet]
+  - addr: { ip: 10.0.0.10, net: 0, subnet: 0 }
+    label: box
     outs:
-      0: 0-600  # { output number : global pixel numbers range }
+      0: 0-300  # { output number : global pixel numbers range }
+      1: 300-600
 
-  - addr: [10.0.0.10, 0, 1]
-    outs:
-      0: 901, 1001-1010
-      1: 600 - 725
-      3: 725- 800,1015
-
-  - addr: [10.0.0.10, 0, 3]
-    outs:
-      2: 800-850
-
-  - addr: [10.0.0.10, 0, 4]
-    outs:
-      1: 1016-1028
-      3: 1062
+#
+#  - addr: { ip: 10.0.0.10, net: 0, subnet: 1 }
+#    name: node-1
+#    outs:
+#      0: 901, 1001-1010
+#      1: 600 - 725
+#      3: 725- 800,1015
+#
+#  - addr: { ip: 10.0.0.10, net: 0, subnet: 4 }
+#    name: j-50
+#    outs:
+#      2: 800-850
+#
+#  - addr: { ip: 10.0.0.10, net: 0, subnet: 2 }
+#    name: tail
+#    outs:
+#      1: 1016-1028
+#      3: 1062
 
 # result will be like:
 # pixel global indexes   address

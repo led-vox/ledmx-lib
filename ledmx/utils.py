@@ -1,5 +1,7 @@
 # 901, 1001-1010 -> generator<[901, 1001, 1002, 1003, 1004 ... 1010]>
 def parse_ranges(ranges: [str | int]) -> [int]:
+    if not ranges:
+        return []
     if isinstance(ranges, int):
         return [ranges]
     for pcs in ranges.split(','):

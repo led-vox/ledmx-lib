@@ -2,10 +2,10 @@ import asyncio
 import contextlib
 import time
 
-from ledmx.matrix import Matrix
-from pathlib import Path
+import yaml
 
-from ledmx.transport import pub
+from ledmx.multiverse import Multiverse
+from pathlib import Path
 
 
 GREEN = 100, 0, 0
@@ -14,17 +14,17 @@ BLUE = 0, 0, 100
 
 
 class Render:
-    def __init__(self, matrix: Matrix, lock: asyncio.Lock, fps: int = 60):
+    def __init__(self, mv: Multiverse, lock: asyncio.Lock, fps: int = 60):
         self.__task = None
         self.__lock = lock
-        self.__matrix = matrix
+        self.__mv = mv
         self.__timeout = 1 / fps
 
     async def __render(self):
         t0 = time.time()
         try:
             while True:
-                await asyncio.sleep(10e-9)
+                await asyncio.sleep(10e-6)
                 t1 = time.time()
                 td = t1 - t0
                 if td < self.__timeout:
@@ -32,7 +32,7 @@ class Render:
                 t0 = t1
 
                 await self.__lock.acquire()
-                pub(self.__matrix)
+                self.__mv.pub()
                 self.__lock.release()
         except KeyboardInterrupt:
             return
@@ -53,29 +53,32 @@ class Render:
         self.__task = None
 
 
-async def main():
+async def main(layout_filename: str):
+    layout = yaml.safe_load(Path(layout_filename).read_text())
     lock = asyncio.Lock()
-    mtx = Matrix(Path('layout.yaml').read_text())
-    render = Render(mtx, lock, 60)
+    mvs = Multiverse(layout)
+    render = Render(mvs, lock, 60)
     render.start_loop()
 
     px_num = 0
     try:
         while True:
+            print(px_num)
             await lock.acquire()
-            mtx.off()
-            mtx[px_num] = BLUE
+            mvs.off()
+            mvs[px_num] = BLUE
             lock.release()
             px_num += 1
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.2)
     except KeyboardInterrupt:
         pass
     finally:
         await lock.acquire()
-        mtx.off()
+        mvs.off()
         lock.release()
         await render.stop_loop()
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(main('layout.yaml'))
+

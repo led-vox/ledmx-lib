@@ -15,3 +15,10 @@ def parse_ranges(ranges: [str | int]) -> [int]:
                 yield el
         except ValueError:
             continue
+
+
+# return first and last global index of children by parent index and size
+def get_children_range(parent_idx: int, parent_size: int) -> (int, int):
+    _first = parent_idx * parent_size
+    _last = _first + parent_size
+    return _first, _last

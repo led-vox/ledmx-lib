@@ -1,4 +1,4 @@
-from ledmx.utils import parse_ranges
+from ledmx.utils import parse_ranges, get_children_range
 import pytest
 
 
@@ -29,3 +29,14 @@ import pytest
 ])
 def test_parse_ranges(args, result):
     assert [r for r in parse_ranges(args)] == result
+
+
+@pytest.mark.parametrize('args, result', [
+    ((0, 0), (0, 0)),
+    ((0, 10), (0, 10)),
+    ((0, 40), (0, 40)),
+    ((2, 40), (80, 120)),
+    ((45, 650), (29250, 29900)),
+])
+def test_get_children_range(args, result):
+    assert get_children_range(*args) == result

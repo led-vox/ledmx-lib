@@ -8,9 +8,9 @@ from ledmx.multiverse import Multiverse
 from pathlib import Path
 
 
-GREEN = 100, 0, 0
-RED = 0, 100, 0
-BLUE = 0, 0, 100
+GREEN = 10, 0, 0
+RED = 0, 10, 0
+BLUE = 0, 0, 10
 
 
 class Render:
@@ -53,14 +53,13 @@ class Render:
         self.__task = None
 
 
-async def main(layout_filename: str):
-    layout = yaml.safe_load(Path(layout_filename).read_text())
+async def main(mvs: Multiverse):
     lock = asyncio.Lock()
-    mvs = Multiverse(layout)
     render = Render(mvs, lock, 60)
     render.start_loop()
 
     px_num = 0
+    px_step = 1
     try:
         while True:
             print(px_num)
@@ -68,8 +67,12 @@ async def main(layout_filename: str):
             mvs.off()
             mvs[px_num] = BLUE
             lock.release()
-            px_num += 1
-            await asyncio.sleep(0.2)
+            px_num += px_step
+            if px_num == 599:
+                px_step = -1
+            if px_num == 1:
+                px_step = 1
+            await asyncio.sleep(0.05)
     except KeyboardInterrupt:
         pass
     finally:
@@ -80,5 +83,26 @@ async def main(layout_filename: str):
 
 
 if __name__ == '__main__':
-    asyncio.run(main('layout.yaml'))
+    layout = yaml.safe_load(Path('layout.yaml').read_text())
+    m_verse = Multiverse(layout)
 
+    # px_num = 0
+    # px_step = 1
+    # while True:
+    #     print(px_num)
+    #     m_verse.off()
+    #     m_verse[px_num] = BLUE
+    #     m_verse.pub()
+    #     px_num += px_step
+    #     if px_num == 599:
+    #         px_step = -1
+    #     if px_num == 1:
+    #         px_step = 1
+    #     time.sleep(0.05)
+    try:
+        asyncio.run(main(m_verse))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        m_verse.off()
+        m_verse.pub()

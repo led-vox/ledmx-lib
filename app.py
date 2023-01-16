@@ -85,20 +85,6 @@ async def main(mvs: Multiverse):
 if __name__ == '__main__':
     layout = yaml.safe_load(Path('layout.yaml').read_text())
     m_verse = Multiverse(layout)
-
-    # px_num = 0
-    # px_step = 1
-    # while True:
-    #     print(px_num)
-    #     m_verse.off()
-    #     m_verse[px_num] = BLUE
-    #     m_verse.pub()
-    #     px_num += px_step
-    #     if px_num == 599:
-    #         px_step = -1
-    #     if px_num == 1:
-    #         px_step = 1
-    #     time.sleep(0.05)
     try:
         asyncio.run(main(m_verse))
     except KeyboardInterrupt:

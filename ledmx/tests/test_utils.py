@@ -1,4 +1,4 @@
-from ledmx.utils import parse_ranges, get_children_range
+from ledmx.utils import parse_ranges, get_children_range, get_uni_addr
 import pytest
 
 
@@ -40,3 +40,19 @@ def test_parse_ranges(args, result):
 ])
 def test_get_children_range(args, result):
     assert get_children_range(*args) == result
+
+
+@pytest.mark.parametrize('args, result', [
+    (0, (0, 0, 0)),
+    (1, (0, 0, 1)),
+    (16, (0, 1, 0)),
+    (245, (0, 15, 5)),
+    (999, (3, 14, 7)),
+    (32512, (127, 0, 0)),
+    (32767, (127, 15, 15))
+])
+def test_get_uni_addr(args, result):
+    assert get_uni_addr(args) == result
+    with pytest.raises(AssertionError):
+        get_uni_addr(-10)
+        get_uni_addr(35000)

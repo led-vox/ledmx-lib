@@ -22,3 +22,10 @@ def get_children_range(parent_idx: int, parent_size: int) -> (int, int):
     _first = parent_idx * parent_size
     _last = _first + parent_size
     return _first, _last
+
+
+def get_uni_addr(uni_idx: int) -> (int, int, int):
+    assert 0 <= uni_idx < 32768
+    subnet, local_uni_idx = divmod(uni_idx, 16)
+    net, local_subnet = divmod(subnet, 16)
+    return net, local_subnet, local_uni_idx

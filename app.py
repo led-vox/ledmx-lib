@@ -2,9 +2,8 @@ import asyncio
 import contextlib
 import time
 
-import yaml
-
 from ledmx.multiverse import Multiverse
+from ledmx.layout import parse_file
 from pathlib import Path
 
 
@@ -83,7 +82,7 @@ async def main(mvs: Multiverse):
 
 
 if __name__ == '__main__':
-    layout = yaml.safe_load(Path('layout.yaml').read_text())
+    layout = parse_file('layout.yaml')
     m_verse = Multiverse(layout)
     try:
         asyncio.run(main(m_verse))

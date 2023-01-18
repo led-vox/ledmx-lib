@@ -1,15 +1,15 @@
 import asyncio
 import contextlib
 import time
+from itertools import cycle
 
 from ledmx.multiverse import Multiverse
 from ledmx.layout import parse_file
-from pathlib import Path
 
 
-GREEN = 10, 0, 0
-RED = 0, 10, 0
-BLUE = 0, 0, 10
+GREEN = 100, 0, 0
+RED = 0, 100, 0
+BLUE = 0, 0, 100
 
 
 class Render:
@@ -57,21 +57,25 @@ async def main(mvs: Multiverse):
     render = Render(mvs, lock, 60)
     render.start_loop()
 
+    colors = cycle([BLUE, RED, GREEN])
+    active_color = next(colors)
+
     px_num = 0
     px_step = 1
     try:
         while True:
-            print(px_num)
             await lock.acquire()
             mvs.off()
-            mvs[px_num] = BLUE
+            mvs[px_num] = active_color
             lock.release()
             px_num += px_step
             if px_num == 599:
                 px_step = -1
+                active_color = next(colors)
             if px_num == 1:
                 px_step = 1
-            await asyncio.sleep(0.05)
+                active_color = next(colors)
+            await asyncio.sleep(0.02)
     except KeyboardInterrupt:
         pass
     finally:

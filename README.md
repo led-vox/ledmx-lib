@@ -1,11 +1,12 @@
 # Multi-controller supervisor library
+Библиотека для контроля сети H802RA узлов.
 
-Art-Net DMX
+## Как работает
+Протокол управления - [Art-Net](https://www.artisticlicence.com/WebSiteMaster/User%20Guides/art-net.pdf)
+Железо - H802RA
 
-## How it works
+## Конфигурация
 
-## Configuration
+## Запуск тестов
 
-## Tests
-
-## Usage
+## Использование

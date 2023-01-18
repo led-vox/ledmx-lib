@@ -17,7 +17,7 @@ class Multiverse:
         for pix in [map_pixels(node, self.__matrix) for node in layout['nodes']]:
             self.__map.update(dict(pix))
 
-        self._seq_map: dict[str, int] = {host: 0 for host in [u.addr.host for u in self.__matrix]}
+        self._seq_map: dict[str, int] = {host: 1 for host in [u.addr.host for u in self.__matrix]}
 
         self._send = send
 
@@ -47,10 +47,9 @@ class Multiverse:
                 bytes(uni.data),
                 uni.addr.net,
                 uni.addr.subnet,
-                uni.addr.uni_idx,
-                self._seq_map[uni.addr.host])
-            self._seq_map[uni.addr.host] = 0 \
-                if self._seq_map[uni.addr.host] > 254 \
+                uni.addr.uni_idx)
+            self._seq_map[uni.addr.host] = 1 \
+                if self._seq_map[uni.addr.host] > 255 \
                 else self._seq_map[uni.addr.host] + 1
             self._send(packet, uni.addr.host)
 

@@ -26,7 +26,7 @@ def validate_yaml(yaml_dict: dict) -> bool:
                     'name': not_empty_str,
                     'host': not_empty_str,
                     'outs': {
-                        And(int, lambda n: 0 <= n <= OUTS_MAX ): Or(not_empty_str, not_null_int)
+                        And(int, lambda n: 0 <= n <= OUTS_MAX): Or(not_empty_str, not_null_int)
                     }
                 }
             ], not_empty_list)

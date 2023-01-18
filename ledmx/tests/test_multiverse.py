@@ -67,4 +67,4 @@ def test_multiverse_pub(mvs):
 
     with patch.object(mvs, '_send', fake_send):
         mvs.pub()
-        assert mvs._seq_map == {'1.1.1.1': 24, '1.1.1.3': 12, '1.1.1.7': 28}
+        assert mvs._seq_map == {'1.1.1.1': 25, '1.1.1.3': 13, '1.1.1.7': 29}

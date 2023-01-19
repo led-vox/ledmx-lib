@@ -1,3 +1,7 @@
+"""
+Тесты класса Мультивселенной
+"""
+
 from ledmx.layout import BYTES_PER_PIXEL, PIXELS_PER_UNI
 from ledmx.multiverse import Multiverse
 
@@ -5,6 +9,7 @@ import pytest
 from mock.mock import patch
 
 
+# создание тестируемого экземпляра
 @pytest.fixture
 def mvs() -> Multiverse:
     return Multiverse({
@@ -17,12 +22,19 @@ def mvs() -> Multiverse:
 
 
 def test_multiverse_len(mvs):
+    """
+    тест длины мультивселенной
+    ОР: числа перечисленных в диапазонах пикселей
+    """
     #  total pixels amount: 10-0 + 220-210 + 130-100 + 1004-1001 + 1 + 708-696 + 904-901 + 1 + 999-995
     assert len(mvs) == 74
 
 
 def test_multiverse_iter(mvs):
-    #  iteration through multiverse is the iteration through pixels id
+    """
+    тест итератора
+    ОР: генерируемый итератором список == список пикселей в карте
+    """
     pixels_list = []
     for pair in [
         (0, 10), (210, 220), (100, 130), (1001, 1004),
@@ -34,19 +46,28 @@ def test_multiverse_iter(mvs):
 
 
 def test_multiverse_index(mvs):
-    #  wrong indexing assertion
+    """
+    тест некорректной индексации (несуществующий ключ)
+    ОР: выброс исключения KeyError
+    """
     with pytest.raises(KeyError):
         mvs[255] = [45, 98, 24]
         _ = mvs[200]
 
 
 def test_multiverse_bytes(mvs):
+    """
+    тест преобразования в байты
+    ОР: полученные байты идентичны ожидаемым
+    """
     assert bytes(mvs) == b'\0' * 64 * PIXELS_PER_UNI * BYTES_PER_PIXEL
 
 
 def test_multiverse_get_set(mvs):
-
-    #  get/set by index
+    """
+    тест установки значений и получения значений данных
+    ОР: данные в матрице соответствуют заданным при обращении через индекс
+    """
     mvs[217] = [45, 98, 24]
 
     m_bytes = bytes(mvs)
@@ -56,11 +77,20 @@ def test_multiverse_get_set(mvs):
 
 
 def test_multiverse_off(mvs):
+    """
+    тест обнуления данных
+    ОР: после обнуления все байты равны нулям
+    """
     mvs.off()
     assert bytes(mvs) == b'\0' * 64 * PIXELS_PER_UNI * BYTES_PER_PIXEL
 
 
 def test_multiverse_pub(mvs):
+    """
+    тест отправки данных
+    ОР: данные отправляются на указанные в адресах вселенных хосты
+    ОР: счётчики - порядковые номера пакетов по хостам соответствуют ожидаемым
+    """
     # noinspection PyUnusedLocal
     def fake_send(data: bytes, host: str, port: int = 6454) -> None:
         assert host in ['1.1.1.1', '1.1.1.3', '1.1.1.7']

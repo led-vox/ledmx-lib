@@ -1,3 +1,7 @@
+"""
+Тесты утилитарных функций
+"""
+
 from ledmx.utils import parse_ranges, get_children_range, get_uni_addr
 import pytest
 
@@ -28,6 +32,11 @@ import pytest
     ]),
 ])
 def test_parse_ranges(args, result):
+    """
+    тест парсинга строки диапазона номеров пикселей
+    на входе - строка диапазона
+    ОР: список номеров пикселей
+    """
     assert [r for r in parse_ranges(args)] == result
 
 
@@ -39,6 +48,12 @@ def test_parse_ranges(args, result):
     ((45, 650), (29250, 29900)),
 ])
 def test_get_children_range(args, result):
+    """
+    тест расчётов индексов первого и последнего элементов списка по
+    заданному номеру и размеру списка;
+    на входе - индекс родителя и его размер
+    ОР: пара индексов - первого и последнего элемента
+    """
     assert get_children_range(*args) == result
 
 
@@ -52,6 +67,11 @@ def test_get_children_range(args, result):
     (32767, (127, 15, 15))
 ])
 def test_get_uni_addr(args, result):
+    """
+    тест вычисления адреса вселенной по её номеру
+    на входе - индекс вселенной
+    ОР: номер сети, номер подсети, номер вселенной в подсети
+    """
     assert get_uni_addr(args) == result
     with pytest.raises(AssertionError):
         get_uni_addr(-10)

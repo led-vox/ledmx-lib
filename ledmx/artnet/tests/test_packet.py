@@ -1,3 +1,7 @@
+"""
+Тесты генерации Art-Net пакетов
+"""
+
 from ledmx.artnet.packet import art_dmx, art_sync
 import pytest
 

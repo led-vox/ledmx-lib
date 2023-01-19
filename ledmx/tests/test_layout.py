@@ -1,3 +1,7 @@
+"""
+Тесты функций для работы с конфигурацией
+"""
+
 from ledmx.layout import build_matrix, map_pixels, validate_yaml
 from ledmx.layout import UNI_PER_OUT, UNI_PER_SUBNET
 from ledmx.model import UniAddr
@@ -24,21 +28,39 @@ import pytest
      [UniAddr('test', '1.1.1.1', 1, 1, 68 + u // UNI_PER_OUT, u) for u in range(8)])
 ])
 def test_build_matrix(node: dict, u_addr_list: list[UniAddr]):
+    """
+    тест на корректность формирования матрицы по конфигу узла
+    на входе - конфиг узла
+    ОР: матрица - список вселенных
+    """
     got = list(u.addr for u in build_matrix(node))
     assert got == u_addr_list
 
 
 def test_build_matrix_assertion():
+    """
+    тест на выброс исключения при передаче некорректного конфига узла при сборке матрицы
+    """
     with pytest.raises(AssertionError):
         list(build_matrix({'outs': {}}))
 
 
 def test_map_pixels_assertion():
+    """
+    тест на выброс исключения при передаче некорректного конфига узла при построении карты
+    """
     with pytest.raises(AssertionError):
         dict(map_pixels({'outs': {}}, []))
 
 
 def test_map_pixels():
+    """
+    тест на корректность построения карты пикселей
+    на входе - конфиг узла и матрица
+    ОР: корректная длина карты
+    ОР: соответствие значений смещений пикселей и указателей на вселенные
+    ОР: соответствие данных по указателю пикселя и данных в матрице
+    """
     node = {'host': '1.1.1.1', 'name': 'test', 'outs': {0: '0-10, 210-220', 3: '100-130', 5: '1001-1004'}}
     matrix = list(build_matrix(node))
     p_map = dict(map_pixels(node, matrix))
@@ -96,6 +118,11 @@ def test_map_pixels():
                {'name': 'node-1', 'host': '1.1.1.2', 'outs': {-3: '0-15', 100500: '3333'}}]},
 ])
 def test_validate_yaml_bad(conf: dict):
+    """
+    тест валидации конфига некорректными данными
+    на входе - некорректный текст конфига
+    ОР: выброс исключения
+    """
     with pytest.raises(Exception):
         validate_yaml(conf)
 
@@ -110,4 +137,9 @@ def test_validate_yaml_bad(conf: dict):
     ]},
 ])
 def test_validate_yaml_good(conf: dict):
+    """
+    тест валидации конфига корректными данными
+    на входе - корректный текст конфига
+    ОР: True как признак валидности переданных данных
+    """
     assert validate_yaml(conf)

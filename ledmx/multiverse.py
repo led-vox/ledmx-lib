@@ -13,27 +13,27 @@ class Multiverse:
         for uni in [build_matrix(node) for node in layout['nodes']]:
             self.__matrix.extend(uni)
 
-        self.__map: dict[int, PixInfo] = {}
+        self.__pixel_map: dict[int, PixInfo] = {}
         for pix in [map_pixels(node, self.__matrix) for node in layout['nodes']]:
-            self.__map.update(dict(pix))
+            self.__pixel_map.update(dict(pix))
 
         self._seq_map: dict[str, int] = {host: 1 for host in [u.addr.host for u in self.__matrix]}
 
         self._send = send
 
     def __len__(self) -> int:
-        return len(self.__map.keys())
+        return len(self.__pixel_map.keys())
 
     def __iter__(self):
-        return iter(self.__map.keys())
+        return iter(self.__pixel_map.keys())
 
     def __getitem__(self, key: int) -> [int, int, int]:
-        return self.__map[key].data
+        return self.__pixel_map[key].data
 
     def __setitem__(self, key: int, value: [int, int, int]):
-        if key not in self.__map:
+        if key not in self.__pixel_map:
             raise KeyError(key)
-        self.__map[key].data[0:3] = value
+        self.__pixel_map[key].data[0:3] = value
 
     def __bytes__(self) -> bytes:
         b_arr = bytearray()

@@ -1,6 +1,8 @@
 # Multi-controller supervisor library
 Модуль для контроля сети H802RA узлов.
 
+[![Tests](https://github.com/mserg/ledmx-lib/actions/workflows/tests.yaml/badge.svg)](https://github.com/mserg/ledmx-lib/actions/workflows/tests.yaml)
+
 Протокол управления - [Art-Net (pdf)](docs/art-net.pdf)
 
 Контроллер - [H802RA (pdf)](docs/H802RA%20instructions%20-%20English.pdf)

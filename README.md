@@ -68,14 +68,20 @@ nodes:
 
 Подробнее - в комментариях к коду.
 
-## Запуск тестов
+## Тесты
 ```bash
 flake8 . --show-source --statistics --max-line-length=127
 python -m pytest .
 ```
 
 ## Использование
-конф:
+Библиотека доступна через [PyPi](https://pypi.org/project/ledmx/)
+
+```bash
+pip install ledmx
+```
+
+конфигурация:
 ```yaml
 ---
 nodes:

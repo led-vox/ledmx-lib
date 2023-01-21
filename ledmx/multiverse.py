@@ -50,15 +50,24 @@ class Multiverse:
         """ итератор по элементам == итератор по номерам пикселей в карте """
         return iter(self.__pixel_map.keys())
 
-    def __getitem__(self, key: int) -> [int, int, int]:
+    def __getitem__(self, key: [int | slice]) -> (int, int, int):
         """ получение значение элемента == указатель на данные пикселя по его номеру """
-        return self.__pixel_map[key].data
+        if isinstance(key, int):
+            return self.__pixel_map[key].data
+        return tuple(self.__pixel_map[k].data for k in range(key.start, key.stop, key.step or 1))
 
-    def __setitem__(self, key: int, value: [int, int, int]):
+    def __setitem__(self,
+                    key: [int | slice],
+                    value: (int, int, int)):
         """ установка значения для элемента == заполнение данных пикселя по указателю """
-        if key not in self.__pixel_map:
-            raise KeyError(key)
-        self.__pixel_map[key].data[0:3] = value
+        if isinstance(key, int):
+            if key not in self.__pixel_map:
+                raise KeyError(key)
+            self.__pixel_map[key].data[0:3] = value
+        else:
+            values = (v for v in value)
+            for k in range(key.start, key.stop, key.step or 1):
+                self[k] = next(values)
 
     def __bytes__(self) -> bytes:
         """ конвертирование в байты == объединение данных всех вселенных матрицы """

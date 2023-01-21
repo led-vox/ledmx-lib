@@ -1,9 +1,11 @@
 """
 Тесты класса Мультивселенной
 """
+import numpy as np
 
 from ledmx.layout import BYTES_PER_PIXEL, PIXELS_PER_UNI
 from ledmx.multiverse import Multiverse
+from ledmx.utils import random_color
 
 import pytest
 from mock.mock import patch
@@ -68,12 +70,26 @@ def test_multiverse_get_set(mvs):
     тест установки значений и получения значений данных
     ОР: данные в матрице соответствуют заданным при обращении через индекс
     """
-    mvs[217] = [45, 98, 24]
+    mvs.off()
+    color = random_color()
+    mvs[217] = color
 
+    color_bytes = bytes(color)
     m_bytes = bytes(mvs)
-    assert m_bytes[:51] == b'\0' * 51 and m_bytes[51:54] == b'\x2d\x62\x18' and m_bytes[54:] == b'\0' * 32586
+    assert m_bytes[:51] == b'\0' * 51 and m_bytes[51:54] == color_bytes and m_bytes[54:] == b'\0' * 32586
+    assert (mvs[217] == np.array(color, 'uint8')).all()
 
-    assert (mvs[217] == [45, 98, 24]).all()
+    mvs.off()
+    _r0, _r1 = 105, 109
+    colors = [random_color() for _ in range(_r0, _r1)]
+    mvs[_r0:_r1] = colors
+    assert (mvs[_r0:_r1] == np.array(colors, 'uint8')).all()
+
+    mvs.off()
+    _r0, _r1 = 0, 8
+    colors = [random_color() for _ in range(_r0, _r1)]
+    mvs[_r0:_r1] = colors
+    assert (mvs[_r0:_r1] == np.array(colors, 'uint8')).all()
 
 
 def test_multiverse_off(mvs):

@@ -1,6 +1,7 @@
 """
 Утилитарные функции
 """
+from numpy.random import randint
 
 
 def parse_ranges(ranges: [str | int]) -> [int]:
@@ -70,3 +71,10 @@ def get_uni_addr(uni_idx: int) -> (int, int, int):
     subnet, local_uni_idx = divmod(uni_idx, 16)
     net, local_subnet = divmod(subnet, 16)
     return net, local_subnet, local_uni_idx
+
+
+def random_color() -> (int, int, int):
+    """
+    генератор случайных значений пикселей
+    """
+    return tuple(randint(0, 255, 3, 'uint8'))

@@ -3,6 +3,7 @@
 """
 from numpy.random import randint
 
+
 def parse_ranges(ranges: [str | int]) -> [int]:
     """
     конвертер строки с диапазонами пикселей в список номеров пикселей

@@ -103,7 +103,7 @@ def build_matrix(node: dict) -> list[Universe]:
                     subnet=subnet,
                     out_idx=out_idx,
                     uni_idx=local_uni_idx),
-                np.zeros((PIXELS_PER_UNI, BYTES_PER_PIXEL), 'b')
+                np.zeros((PIXELS_PER_UNI, BYTES_PER_PIXEL), 'uint8')
             )
 
 

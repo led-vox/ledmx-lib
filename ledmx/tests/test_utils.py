@@ -1,8 +1,8 @@
 """
 Тесты утилитарных функций
 """
-
-from ledmx.utils import parse_ranges, get_children_range, get_uni_addr
+from ledmx.layout import BYTES_PER_PIXEL
+from ledmx.utils import parse_ranges, get_children_range, get_uni_addr, random_color
 import pytest
 
 
@@ -76,3 +76,14 @@ def test_get_uni_addr(args, result):
     with pytest.raises(AssertionError):
         get_uni_addr(-10)
         get_uni_addr(35000)
+
+
+def test_random_color():
+    """
+    тест генерации случайных троек байт
+    ОР: список троек байт указанной длины
+    """
+    got = random_color()
+    assert len(got) == BYTES_PER_PIXEL
+    for b in got:
+        assert 0 <= b < 255

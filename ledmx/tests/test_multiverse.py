@@ -4,6 +4,7 @@
 
 from ledmx.layout import BYTES_PER_PIXEL, PIXELS_PER_UNI
 from ledmx.multiverse import Multiverse
+from ledmx.utils import random_color
 
 import pytest
 from mock.mock import patch
@@ -74,6 +75,25 @@ def test_multiverse_get_set(mvs):
     assert m_bytes[:51] == b'\0' * 51 and m_bytes[51:54] == b'\x2d\x62\x18' and m_bytes[54:] == b'\0' * 32586
 
     assert (mvs[217] == [45, 98, 24]).all()
+
+
+# def test_multiverse_get_set_slice(mvs):
+#     """
+#     тест установки значений и получения значений данных по срезу ( [a:b] = ((g_a, b_a, r_a), ...)
+#     ОР: данные в матрице соответствуют заданным при обращении через индексы среза
+#     ОР: при обращении по неверным индексам - выбрасывается исключение
+#     """
+#     _r0, _r1 = 105, 121
+#     rc = random_color()
+#     values = tuple(random_color() for i in range(_r0, _r1))
+#     mvs[_r0:_r1] = values
+#
+#     m_bytes = bytes(mvs)
+#     assert m_bytes[:_r0] == b'\0' * _r0 and \
+#            m_bytes[_r0:_r1] == values and \
+#            m_bytes[_r1:] == b'\0' * 32586
+#
+#     assert mvs[_r0] == values[0] and mvs[_r1] == values[-1]
 
 
 def test_multiverse_off(mvs):

@@ -1,8 +1,11 @@
 """
 Описание класса Мультивселенной
 """
+from typing import Sequence
 
-from ledmx.layout import build_matrix, map_pixels, validate_yaml
+from numpy import uint8
+
+from ledmx.layout import build_matrix, map_pixels, validate_yaml, BYTES_PER_PIXEL
 from ledmx.model import Universe, PixInfo
 from ledmx.transport import send
 from ledmx.artnet.packet import art_dmx
@@ -48,25 +51,50 @@ class Multiverse:
 
     def __iter__(self):
         """ итератор по элементам == итератор по номерам пикселей в карте """
-        return iter(self.__pixel_map.keys())
+        return iter(sorted(self.__pixel_map.keys()))
 
-    def __getitem__(self, key: [int | slice]) -> (int, int, int):
+    def __getitem__(self, key: [int | slice]) -> Sequence | None:
         """ получение значение элемента == указатель на данные пикселя по его номеру """
-        if isinstance(key, int):
-            return self.__pixel_map[key].data
-        return tuple(self.__pixel_map[k].data for k in range(key.start, key.stop, key.step or 1))
 
-    def __setitem__(self,
-                    key: [int | slice],
-                    value: (int, int, int)):
-        """ установка значения для элемента == заполнение данных пикселя по указателю """
+        # [int] -> [int].data
         if isinstance(key, int):
-            if key not in self.__pixel_map:
-                raise KeyError(key)
-            self.__pixel_map[key].data[0:3] = value
+            if key in self.__pixel_map:
+                return self.__pixel_map[key].data
+            return None
+
+        # [a:z] -> [a], [b], [c] ... [z]
         else:
+            _f = key.start or self.first()
+            _l = key.stop or (self.last() + 1)
+            _s = key.step or 1
+
+            keys = [k for k in self if _f <= k < _l][::_s]
+            return tuple(self[k] for k in keys)
+
+    def __setitem__(self, key: [int | slice], value: Sequence):
+        """ установка значения для элемента == заполнение данных пикселя по указателю """
+
+        # [key] = (int, int, int)
+        if isinstance(key, int):
+            if key in self.__pixel_map:
+                self.__pixel_map[key].data[0:3] = value
+        # [_f:_l:_s] = ...
+        else:
+            _f = key.start or self.first()
+            _l = key.stop or (self.last() + 1)
+            _s = key.step or 1
+
+            keys = [k for k in self if _f <= k < _l][::_s]
+
+            # ... (int, int, int)
+            if isinstance(value[0], (uint8, int)) and len(value) == BYTES_PER_PIXEL:
+                for k in keys:
+                    self[k] = value
+                return
+
+            # ... ((int, int, int), (int, int, int), ... )
             values = (v for v in value)
-            for k in range(key.start, key.stop, key.step or 1):
+            for k in keys:
                 self[k] = next(values)
 
     def __bytes__(self) -> bytes:
@@ -75,6 +103,14 @@ class Multiverse:
         for u in self.__matrix:
             b_arr.extend(u.data)
         return bytes(b_arr)
+
+    def first(self) -> int:
+        """ id первого пикселя """
+        return min(self.__pixel_map.keys())
+
+    def last(self) -> int:
+        """ id последнего пикселя """
+        return max(self.__pixel_map.keys())
 
     def pub(self):
         """

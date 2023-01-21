@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ledmx",
-    version="0.1a",
+    version="0.2a",
     license='MIT',
     author="Sergei Michenko",
     author_email="mserg@tih.ru",

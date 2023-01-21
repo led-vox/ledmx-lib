@@ -16,11 +16,28 @@ from mock.mock import patch
 def mvs() -> Multiverse:
     return Multiverse({
         'nodes': [
-            {'host': '1.1.1.1', 'name': 'test0', 'outs': {0: '0-10, 210-220', 3: '100-130', 5: '1001-1004'}},
+            {'host': '1.1.1.1', 'name': 'test0', 'outs': {0: '3-10, 210-220', 3: '100-130', 5: '1001-1004'}},
             {'host': '1.1.1.3', 'name': 'test1', 'outs': {2: '666, 696-708'}},
             {'host': '1.1.1.7', 'name': 'test2', 'outs': {6: '901-904, 990, 995-999'}},
         ]
     })
+
+
+COLOR_BLACK = 0, 0, 0
+COLOR_0 = random_color()
+COLOR_1 = random_color()
+COLOR_2 = random_color()
+COLOR_3 = random_color()
+COLOR_4 = random_color()
+COLOR_5 = random_color()
+COLOR_6 = random_color()
+COLOR_7 = random_color()
+COLOR_8 = random_color()
+COLOR_9 = random_color()
+
+
+def arr_eq(arr0, arr1):
+    assert (np.array(arr0) == np.array(arr1)).all()
 
 
 def test_multiverse_len(mvs):
@@ -28,8 +45,8 @@ def test_multiverse_len(mvs):
     тест длины мультивселенной
     ОР: числа перечисленных в диапазонах пикселей
     """
-    #  total pixels amount: 10-0 + 220-210 + 130-100 + 1004-1001 + 1 + 708-696 + 904-901 + 1 + 999-995
-    assert len(mvs) == 74
+    #  total pixels amount: 10-3 + 220-210 + 130-100 + 1004-1001 + 1 + 708-696 + 904-901 + 1 + 999-995
+    assert len(mvs) == 71
 
 
 def test_multiverse_iter(mvs):
@@ -39,22 +56,12 @@ def test_multiverse_iter(mvs):
     """
     pixels_list = []
     for pair in [
-        (0, 10), (210, 220), (100, 130), (1001, 1004),
+        (3, 10), (210, 220), (100, 130), (1001, 1004),
         (666, 667), (696, 708),
         (901, 904), (990, 991), (995, 999),
     ]:
         pixels_list.extend(list(range(*pair)))
     assert sorted(list(p for p in mvs)) == sorted(pixels_list)
-
-
-def test_multiverse_index(mvs):
-    """
-    тест некорректной индексации (несуществующий ключ)
-    ОР: выброс исключения KeyError
-    """
-    with pytest.raises(KeyError):
-        mvs[255] = [45, 98, 24]
-        _ = mvs[200]
 
 
 def test_multiverse_bytes(mvs):
@@ -65,31 +72,58 @@ def test_multiverse_bytes(mvs):
     assert bytes(mvs) == b'\0' * 64 * PIXELS_PER_UNI * BYTES_PER_PIXEL
 
 
-def test_multiverse_get_set(mvs):
+def test_multiverse_first_last(mvs):
+    assert mvs.first() == 3
+    assert mvs.last() == 1003
+
+
+def test_multiverse_get_set():
     """
     тест установки значений и получения значений данных
     ОР: данные в матрице соответствуют заданным при обращении через индекс
     """
-    mvs.off()
-    color = random_color()
-    mvs[217] = color
+    m = Multiverse({'nodes': [{'name': 'test', 'host': '10.0.0.11', 'outs': {
+        0: '4-7, 35', 2: '12-14'
+    }}]})
+    # {4:, 5:, 6:, 12:, 13:, 35:}
 
-    color_bytes = bytes(color)
-    m_bytes = bytes(mvs)
-    assert m_bytes[:51] == b'\0' * 51 and m_bytes[51:54] == color_bytes and m_bytes[54:] == b'\0' * 32586
-    assert (mvs[217] == np.array(color, 'uint8')).all()
+    # установка по несуществующему индексу не выбрасывает исключения
+    m.off()
+    m[10] = COLOR_0
+    assert m[10] is None
 
-    mvs.off()
-    _r0, _r1 = 105, 109
-    colors = [random_color() for _ in range(_r0, _r1)]
-    mvs[_r0:_r1] = colors
-    assert (mvs[_r0:_r1] == np.array(colors, 'uint8')).all()
+    m.off()
+    m[5] = COLOR_0
+    arr_eq(m[5], COLOR_0)
 
-    mvs.off()
-    _r0, _r1 = 0, 8
-    colors = [random_color() for _ in range(_r0, _r1)]
-    mvs[_r0:_r1] = colors
-    assert (mvs[_r0:_r1] == np.array(colors, 'uint8')).all()
+    m.off()
+    #       4         5        6       12       13       35
+    m[:] = COLOR_0, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5
+    arr_eq(m[:], (COLOR_0, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5))
+
+    m.off()
+    m[:] = COLOR_8
+    arr_eq(m[:], (COLOR_8, COLOR_8, COLOR_8, COLOR_8, COLOR_8, COLOR_8))
+
+    m.off()
+    m[:6] = COLOR_0, COLOR_7
+    arr_eq(m[:6], (COLOR_0, COLOR_7))
+    arr_eq(m[4], COLOR_0)
+
+    m.off()
+    m[10:] = COLOR_3, COLOR_5, COLOR_1
+    arr_eq(m[10:], (COLOR_3, COLOR_5, COLOR_1))
+    arr_eq(m[13], COLOR_5)
+
+    m.off()
+    m[::3] = COLOR_5
+    arr_eq(m[:], (COLOR_5, COLOR_BLACK, COLOR_BLACK, COLOR_5, COLOR_BLACK, COLOR_BLACK))
+    arr_eq(m[::3], COLOR_5)
+
+    m.off()
+    m[5:13] = COLOR_3
+    m[13:25] = COLOR_7
+    arr_eq(m[:], (COLOR_BLACK, COLOR_3, COLOR_3, COLOR_3, COLOR_7, COLOR_BLACK))
 
 
 def test_multiverse_off(mvs):

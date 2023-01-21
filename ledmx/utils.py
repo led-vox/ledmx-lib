@@ -1,6 +1,7 @@
 """
 Утилитарные функции
 """
+import numpy as np
 from numpy.random import randint
 
 
@@ -73,8 +74,8 @@ def get_uni_addr(uni_idx: int) -> (int, int, int):
     return net, local_subnet, local_uni_idx
 
 
-def random_color() -> (int, int, int):
+def random_color() -> np.ndarray:
     """
     генератор случайных значений пикселей
     """
-    return tuple(randint(0, 255, 3, 'uint8'))
+    return randint(0, 255, 3, 'uint8')

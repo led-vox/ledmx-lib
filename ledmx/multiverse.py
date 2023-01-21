@@ -7,6 +7,7 @@ from ledmx.model import Universe, PixInfo
 from ledmx.transport import send
 from ledmx.artnet.packet import art_dmx
 
+
 class Multiverse:
     """
     Мультивселенная - матрица данных + карта пикселей и ссылок а данные
